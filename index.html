@@ -159,6 +159,22 @@
     font-family:'Public Sans',sans-serif;font-size:0.95rem;background:#fff;color:var(--ink);
   }
   .field input:focus{outline:2px solid var(--sage);outline-offset:1px;border-color:var(--sage);}
+  .field textarea{
+    width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:2px;
+    font-family:'Public Sans',sans-serif;font-size:0.95rem;background:#fff;color:var(--ink);
+    resize:vertical;min-height:70px;
+  }
+  .field textarea:focus{outline:2px solid var(--sage);outline-offset:1px;border-color:var(--sage);}
+  .recommend-tag{
+    display:inline-block;margin-left:6px;
+    font-family:'IBM Plex Mono',monospace;font-size:0.6rem;font-weight:500;
+    color:var(--sage);background:rgba(92,107,79,0.12);
+    padding:2px 7px;border-radius:2px;letter-spacing:0.03em;text-transform:uppercase;
+    vertical-align:middle;
+  }
+  .field-hint{
+    display:block;font-size:0.78rem;color:var(--ink-soft);margin-top:6px;line-height:1.4;
+  }
   .submit-btn{
     width:100%;padding:14px;margin-top:6px;
     background:var(--brick);color:var(--paper);border:none;border-radius:2px;
@@ -313,6 +329,11 @@
         <div class="field">
           <label for="email">Email</label>
           <input id="email" type="email" placeholder="you@email.com">
+        </div>
+        <div class="field">
+          <label for="details">Tell us about the property <span class="recommend-tag">Highly Recommended</span></label>
+          <textarea id="details" rows="3" placeholder="Condition, repairs needed, why you're selling, tenant situation, etc."></textarea>
+          <span class="field-hint">Optional — but the more we know, the more accurate your offer will be.</span>
         </div>
         <button type="submit" class="submit-btn">Get My Cash Offer</button>
       </form>
