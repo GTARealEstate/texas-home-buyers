@@ -336,26 +336,26 @@
       <form id="leadForm">
         <div class="field">
           <label for="address">Property Address</label>
-          <input id="address" type="text" placeholder="123 Main St, San Antonio, TX" required>
+          <input id="address" name="Property Address" type="text" placeholder="123 Main St, San Antonio, TX" required>
         </div>
         <div class="field">
           <label for="name">Your Name</label>
-          <input id="name" type="text" placeholder="Full name" required>
+          <input id="name" name="Name" type="text" placeholder="Full name" required>
         </div>
         <div class="field">
           <label for="phone">Phone Number</label>
-          <input id="phone" type="tel" placeholder="(210) 555-5555" required>
+          <input id="phone" name="Phone" type="tel" placeholder="(210) 555-5555" required>
         </div>
         <div class="field">
           <label for="email">Email</label>
-          <input id="email" type="email" placeholder="you@email.com">
+          <input id="email" name="Email" type="email" placeholder="you@email.com">
         </div>
         <div class="field">
           <label for="details">Tell us about the property <span class="recommend-tag">Highly Recommended</span></label>
-          <textarea id="details" rows="3" placeholder="Condition, repairs needed, why you're selling, tenant situation, etc."></textarea>
+          <textarea id="details" name="Property Details" rows="3" placeholder="Condition, repairs needed, why you're selling, tenant situation, etc."></textarea>
           <span class="field-hint">Optional — but the more we know, the more accurate your offer will be.</span>
         </div>
-        <button type="submit" class="submit-btn">Get My Cash Offer</button>
+        <button type="submit" class="submit-btn" id="submitBtn">Get My Cash Offer</button>
       </form>
       <div id="successMsg" class="success-msg">
         <span class="mono">Entry Received</span>
@@ -472,13 +472,35 @@
   },{threshold:0.15});
   revealEls.forEach(el=>io.observe(el));
 
-  // Form handling (client-side only — wire to a real backend to receive leads)
+  // Form handling — submits to Formspree so you get an email for every lead
   const form = document.getElementById('leadForm');
   const successMsg = document.getElementById('successMsg');
+  const submitBtn = document.getElementById('submitBtn');
+  const FORMSPREE_ENDPOINT = 'https://formspree.io/f/myezvepv';
+
   form.addEventListener('submit', function(e){
     e.preventDefault();
-    form.style.display = 'none';
-    successMsg.classList.add('show');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending...';
+
+    fetch(FORMSPREE_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Accept': 'application/json' },
+      body: new FormData(form)
+    })
+    .then(function(response){
+      if (response.ok) {
+        form.style.display = 'none';
+        successMsg.classList.add('show');
+      } else {
+        throw new Error('Submission failed');
+      }
+    })
+    .catch(function(){
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Get My Cash Offer';
+      alert('Something went wrong sending your info. Please try again or call/text us directly.');
+    });
   });
 </script>
 
