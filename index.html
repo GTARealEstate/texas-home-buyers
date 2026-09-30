@@ -203,6 +203,18 @@
   }
   .submit-btn:hover{background:var(--brick-dark);}
   .form-note{font-size:0.75rem;color:var(--ink-soft);margin-top:12px;line-height:1.5;}
+  .form-validation-msg{
+    display:none;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.78rem;color:var(--brick);
+    background:rgba(139,58,43,0.08);
+    border:1px solid rgba(139,58,43,0.25);
+    border-radius:2px;
+    padding:10px 12px;
+    margin:0 0 14px;
+    text-align:center;
+  }
+  .form-validation-msg.show{display:block;}
   .success-msg{display:none;text-align:center;padding:20px 0;}
   .success-msg.show{display:block;}
   .success-msg .mono{color:var(--sage);font-size:0.75rem;}
@@ -333,7 +345,7 @@
     <div class="form-card" data-reveal>
       <span class="tag">Property Record — New Entry</span>
       <h3>Get your no-obligation cash offer</h3>
-      <form id="leadForm">
+      <form id="leadForm" novalidate>
         <div class="field">
           <label for="address">Property Address</label>
           <input id="address" name="Property Address" type="text" placeholder="123 Main St, San Antonio, TX" required>
@@ -348,13 +360,14 @@
         </div>
         <div class="field">
           <label for="email">Email</label>
-          <input id="email" name="Email" type="email" placeholder="you@email.com">
+          <input id="email" name="Email" type="email" placeholder="you@email.com" required>
         </div>
         <div class="field">
           <label for="details">Tell us about the property <span class="recommend-tag">Highly Recommended</span></label>
           <textarea id="details" name="Property Details" rows="3" placeholder="Condition, repairs needed, why you're selling, tenant situation, etc."></textarea>
           <span class="field-hint">Optional — but the more we know, the more accurate your offer will be.</span>
         </div>
+        <p id="formValidationMsg" class="form-validation-msg">Please fill out all required fields before submitting.</p>
         <button type="submit" class="submit-btn" id="submitBtn">Get My Cash Offer</button>
       </form>
       <div id="successMsg" class="success-msg">
@@ -491,10 +504,25 @@
   const form = document.getElementById('leadForm');
   const successMsg = document.getElementById('successMsg');
   const submitBtn = document.getElementById('submitBtn');
+  const validationMsg = document.getElementById('formValidationMsg');
   const FORMSPREE_ENDPOINT = 'https://formspree.io/f/myezvepv';
 
   form.addEventListener('submit', function(e){
     e.preventDefault();
+
+    // Check all required fields (property details stays optional)
+    const requiredFields = form.querySelectorAll('[required]');
+    let allFilled = true;
+    requiredFields.forEach(function(field){
+      if (!field.value.trim()) { allFilled = false; }
+    });
+
+    if (!allFilled) {
+      validationMsg.classList.add('show');
+      return;
+    }
+    validationMsg.classList.remove('show');
+
     submitBtn.disabled = true;
     submitBtn.textContent = 'Sending...';
 
