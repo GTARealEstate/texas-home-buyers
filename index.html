@@ -289,10 +289,19 @@
   .final-cta .submit-btn{max-width:280px;margin:28px auto 0;}
   .final-cta .form-card{margin:32px auto 0;text-align:left;}
 
+  .consent{
+    display:flex;gap:10px;align-items:flex-start;
+    margin:4px 0 16px;font-size:0.76rem;line-height:1.55;color:var(--ink-soft);cursor:pointer;
+  }
+  .consent input{margin-top:3px;width:18px;height:18px;flex:none;accent-color:var(--brick);cursor:pointer;}
+  .consent a{color:var(--brick);text-decoration:underline;}
+
   footer{
     padding:32px 0;text-align:center;font-size:0.8rem;color:var(--ink-soft);
-    font-family:'IBM Plex Mono',monospace;
+    font-family:'IBM Plex Mono',monospace;line-height:1.9;
   }
+  footer a{color:inherit;text-decoration:underline;}
+  footer a:hover{color:var(--brick);}
 
   [data-reveal]{opacity:0;transform:translateY(16px);transition:opacity .6s ease, transform .6s ease;}
   [data-reveal].in{opacity:1;transform:translateY(0);}
@@ -367,6 +376,10 @@
           <textarea id="details" name="Property Details" rows="3" placeholder="Condition, repairs needed, why you're selling, tenant situation, etc."></textarea>
           <span class="field-hint">Optional — but the more we know, the more accurate your offer will be.</span>
         </div>
+        <label class="consent" for="smsConsent">
+          <input type="checkbox" id="smsConsent">
+          <span>I agree to receive text messages from GTA Real Estate Ventures, LLC (GTA Home Buyers) at the phone number above about my property inquiry, including follow-ups and offer details. Messages may be sent using automated technology. Message frequency varies. Msg &amp; data rates may apply. Reply STOP to cancel or HELP for help. Consent is optional and is not a condition of receiving an offer or selling your property. See our <a href="/privacy.html" target="_blank" rel="noopener">Privacy Policy</a> and <a href="/terms.html#sms" target="_blank" rel="noopener">Terms &amp; SMS Terms</a>.</span>
+        </label>
         <p id="formValidationMsg" class="form-validation-msg">Please fill out all required fields before submitting.</p>
         <button type="submit" class="submit-btn" id="submitBtn">Get My Cash Offer</button>
       </form>
@@ -474,7 +487,8 @@
 </section>
 
 <footer>
-  © 2026 GTA Home Buyers · (361) 331-0630 · Serving San Antonio &amp; the Coastal Bend
+  © 2026 GTA Real Estate Ventures, LLC · GTA Home Buyers<br>(361) 331-0630 · Serving San Antonio &amp; the Coastal Bend<br>
+  <a href="/privacy.html">Privacy Policy</a> · <a href="/terms.html">Terms</a> · <a href="/terms.html#sms">SMS Terms</a>
 </footer>
 
 <script>
@@ -526,10 +540,18 @@
     submitBtn.disabled = true;
     submitBtn.textContent = 'Sending...';
 
+    // Record exactly what the person agreed to (proof of consent for text messaging)
+    const submission = new FormData(form);
+    const smsConsent = document.getElementById('smsConsent');
+    submission.set('SMS Consent', smsConsent.checked
+      ? 'YES - agreed to receive text messages'
+      : 'NO - did not agree to text messages');
+    submission.set('Consent Wording Version', '2026-10-05-v2');
+
     fetch(FORMSPREE_ENDPOINT, {
       method: 'POST',
       headers: { 'Accept': 'application/json' },
-      body: new FormData(form)
+      body: submission
     })
     .then(function(response){
       if (response.ok) {
