@@ -289,6 +289,60 @@
   .final-cta .submit-btn{max-width:280px;margin:28px auto 0;}
   .final-cta .form-card{margin:32px auto 0;text-align:left;}
 
+  /* Tap-to-select questions: property condition + reason for selling */
+  .choice-group{border:0;margin:0 0 18px;padding:0;min-width:0;}
+  .choice-group legend{
+    padding:0;margin:0 0 4px;width:100%;
+    font-family:'IBM Plex Mono',monospace;font-size:0.72rem;
+    color:var(--ink-soft);letter-spacing:0.04em;text-transform:uppercase;
+  }
+  .choice-hint{display:block;font-size:0.78rem;color:var(--ink-soft);margin:0 0 10px;line-height:1.4;}
+  .choice-group.missing legend{color:var(--brick);}
+  .choice-group.missing .card{border-color:var(--brick);}
+
+  .opt{position:relative;display:block;}
+  .opt input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer;z-index:1;}
+
+  .cond-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .card{
+    position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:5px;
+    height:100%;padding:14px 12px 12px;
+    background:#fff;border:1px solid var(--line);border-radius:2px;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .card svg{width:36px;height:36px;color:var(--ink-soft);margin-bottom:2px;transition:color .15s ease;}
+  .card .t{font-family:'Zilla Slab',serif;font-weight:700;font-size:1.08rem;line-height:1.1;color:var(--ink);}
+  .card .d{font-size:0.76rem;line-height:1.35;color:var(--ink-soft);}
+  .card::after{
+    content:'\2713';position:absolute;top:8px;right:8px;width:20px;height:20px;
+    display:flex;align-items:center;justify-content:center;
+    border:2px solid var(--brick);border-radius:50%;
+    font-size:11px;font-weight:700;color:var(--brick);
+    opacity:0;transform:rotate(-14deg) scale(.7);
+    transition:opacity .15s ease, transform .2s ease;
+  }
+  .opt:hover .card{border-color:var(--brick);}
+  .opt input:checked + .card{border-color:var(--brick);background:var(--paper);box-shadow:inset 0 0 0 1px var(--brick);}
+  .opt input:checked + .card svg{color:var(--brick);}
+  .opt input:checked + .card::after{opacity:1;transform:rotate(-14deg) scale(1);}
+  .opt input:focus-visible + .card,
+  .opt input:focus-visible + .chip{outline:2px solid var(--sage);outline-offset:2px;}
+
+  .chip-row{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip-row .opt{display:inline-block;}
+  .chip{
+    display:inline-block;padding:9px 13px;
+    background:#fff;border:1px solid var(--line);border-radius:2px;
+    font-size:0.85rem;line-height:1.2;color:var(--ink);
+    transition:border-color .15s ease, background .15s ease, color .15s ease;
+  }
+  .opt:hover .chip{border-color:var(--brick);}
+  .opt input:checked + .chip{background:var(--brick);border-color:var(--brick);color:var(--paper);}
+
+  @media (prefers-reduced-motion: reduce){
+    .card, .card svg, .card::after, .chip{transition:none;}
+  }
+
   .consent{
     display:flex;gap:10px;align-items:flex-start;
     margin:4px 0 16px;font-size:0.76rem;line-height:1.55;color:var(--ink-soft);cursor:pointer;
@@ -371,9 +425,30 @@
           <label for="email">Email</label>
           <input id="email" name="Email" type="email" placeholder="you@email.com" required>
         </div>
+        <fieldset class="choice-group" id="conditionGroup">
+          <legend>What condition is the property in?</legend>
+          <span class="choice-hint">Tap the closest match. A rough idea is fine.</span>
+          <div class="cond-grid">
+          <label class="opt"><input type="radio" name="Property Condition" value="None (move-in ready)"><span class="card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5L12 4l9 7.5"/><path d="M5.5 10v9a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-9"/><path d="M9.5 20v-6h5v6"/></svg><span class="t">Move-in ready</span><span class="d">Nothing needs fixing</span></span></label>
+          <label class="opt"><input type="radio" name="Property Condition" value="Cosmetic (flooring, paint)"><span class="card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5L12 4l9 7.5"/><path d="M5.5 10v9a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-9"/><path d="M9.5 20v-6h5v6"/><path d="M8 11.5h8"/></svg><span class="t">Cosmetic</span><span class="d">Paint, flooring, small updates</span></span></label>
+          <label class="opt"><input type="radio" name="Property Condition" value="Remodel"><span class="card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5L12 4l9 7.5"/><path d="M5.5 10v9a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-9" stroke-dasharray="2 2.2"/><path d="M9.5 20v-6h5v6"/></svg><span class="t">Remodel</span><span class="d">Kitchens, baths, bigger repairs</span></span></label>
+          <label class="opt"><input type="radio" name="Property Condition" value="Full gut (needs everything)"><span class="card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5L12 4l9 7.5" stroke-dasharray="2 2.2"/><path d="M5.5 10v9a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-9" stroke-dasharray="2 2.2"/><path d="M9.5 10.5V20M14.5 10.5V20" stroke-dasharray="2 2.2" opacity=".55"/></svg><span class="t">Full gut</span><span class="d">Needs everything</span></span></label>
+          </div>
+        </fieldset>
+        <fieldset class="choice-group">
+          <legend>Main reason for selling <span class="recommend-tag">Optional</span></legend>
+          <div class="chip-row">
+          <label class="opt"><input type="radio" name="Reason for Selling" value="Foreclosure"><span class="chip">Avoiding foreclosure</span></label>
+          <label class="opt"><input type="radio" name="Reason for Selling" value="Emergency"><span class="chip">Emergency or urgent need</span></label>
+          <label class="opt"><input type="radio" name="Reason for Selling" value="Relocating"><span class="chip">Relocating</span></label>
+          <label class="opt"><input type="radio" name="Reason for Selling" value="Inheritance"><span class="chip">Inherited the property</span></label>
+          <label class="opt"><input type="radio" name="Reason for Selling" value="Selling without an agent"><span class="chip">Selling without an agent</span></label>
+          <label class="opt"><input type="radio" name="Reason for Selling" value="Other"><span class="chip">Something else</span></label>
+          </div>
+        </fieldset>
         <div class="field">
           <label for="details">Tell us about the property <span class="recommend-tag">Highly Recommended</span></label>
-          <textarea id="details" name="Property Details" rows="3" placeholder="Condition, repairs needed, why you're selling, tenant situation, etc."></textarea>
+          <textarea id="details" name="Property Details" rows="3" placeholder="Anything else we should know: repairs needed, tenants, timeline, etc."></textarea>
           <span class="field-hint">Optional — but the more we know, the more accurate your offer will be.</span>
         </div>
         <label class="consent" for="smsConsent">
@@ -521,18 +596,44 @@
   const validationMsg = document.getElementById('formValidationMsg');
   const FORMSPREE_ENDPOINT = 'https://formspree.io/f/myezvepv';
 
+  // Clear the "pick one" highlight once a condition is chosen
+  document.getElementById('conditionGroup').addEventListener('change', function(){
+    this.classList.remove('missing');
+  });
+
+  // Optional question: tapping the selected reason a second time un-selects it
+  const reasonRadios = document.querySelectorAll('input[name="Reason for Selling"]');
+  reasonRadios.forEach(function(r){
+    r.addEventListener('click', function(){
+      if (r.dataset.was === '1') {
+        r.checked = false;
+        r.dataset.was = '';
+      } else {
+        reasonRadios.forEach(function(o){ o.dataset.was = ''; });
+        r.dataset.was = '1';
+      }
+    });
+  });
+
   form.addEventListener('submit', function(e){
     e.preventDefault();
 
-    // Check all required fields (property details stays optional)
-    const requiredFields = form.querySelectorAll('[required]');
-    let allFilled = true;
-    requiredFields.forEach(function(field){
-      if (!field.value.trim()) { allFilled = false; }
+    // Check all required fields (property details and reason for selling stay optional)
+    let firstMissing = null;
+    form.querySelectorAll('[required]').forEach(function(field){
+      if (!field.value.trim() && !firstMissing) { firstMissing = field; }
     });
+    // Property condition is a tap-to-select group, so check that one is picked
+    const conditionGroup = document.getElementById('conditionGroup');
+    if (!form.querySelector('input[name="Property Condition"]:checked')) {
+      conditionGroup.classList.add('missing');
+      if (!firstMissing) { firstMissing = conditionGroup; }
+    }
 
-    if (!allFilled) {
+    if (firstMissing) {
       validationMsg.classList.add('show');
+      firstMissing.scrollIntoView({ block: 'center' });
+      if (firstMissing.focus && firstMissing !== conditionGroup) { firstMissing.focus({ preventScroll: true }); }
       return;
     }
     validationMsg.classList.remove('show');
