@@ -298,6 +298,8 @@
   }
   .choice-hint{display:block;font-size:0.78rem;color:var(--ink-soft);margin:0 0 10px;line-height:1.4;}
   .choice-group.missing legend{color:var(--brick);}
+  .field.missing label{color:var(--brick);}
+  .field.missing input{border-color:var(--brick);box-shadow:inset 0 0 0 1px var(--brick);}
   .choice-group.missing .card{border-color:var(--brick);}
 
   .opt{position:relative;display:block;}
@@ -351,7 +353,7 @@
   .consent a{color:var(--brick);text-decoration:underline;}
 
   footer{
-    padding:32px 0;text-align:center;font-size:0.8rem;color:var(--ink-soft);
+    padding:32px 24px;text-align:center;font-size:0.8rem;color:var(--ink-soft);
     font-family:'IBM Plex Mono',monospace;line-height:1.9;
   }
   footer a{color:inherit;text-decoration:underline;}
@@ -455,7 +457,7 @@
           <input type="checkbox" id="smsConsent">
           <span>I agree to receive text messages from GTA Real Estate Ventures LLC (GTA Home Buyers) at the phone number above about my property inquiry, including follow-ups and offer details. Messages may be sent using automated technology. Message frequency varies. Msg &amp; data rates may apply. Reply STOP to cancel or HELP for help. Consent is optional and is not a condition of receiving an offer or selling your property. See our <a href="/privacy.html" target="_blank" rel="noopener">Privacy Policy</a> and <a href="/terms.html#sms" target="_blank" rel="noopener">Terms &amp; SMS Terms</a>.</span>
         </label>
-        <p id="formValidationMsg" class="form-validation-msg">Please fill out all required fields before submitting.</p>
+        <p id="formValidationMsg" class="form-validation-msg" role="alert">Please fill out all required fields before submitting.</p>
         <button type="submit" class="submit-btn" id="submitBtn">Get My Cash Offer</button>
       </form>
       <div id="successMsg" class="success-msg">
@@ -601,6 +603,14 @@
     this.classList.remove('missing');
   });
 
+  // As people fix a field, clear its red outline; hide the message once nothing is left to fix
+  function clearMissing(box){
+    if (box) { box.classList.remove('missing'); }
+    if (!form.querySelector('.missing')) { validationMsg.classList.remove('show'); }
+  }
+  form.addEventListener('input', function(e){ clearMissing(e.target.closest('.field')); });
+  document.getElementById('conditionGroup').addEventListener('change', function(){ clearMissing(this); });
+
   // Optional question: tapping the selected reason a second time un-selects it
   const reasonRadios = document.querySelectorAll('input[name="Reason for Selling"]');
   reasonRadios.forEach(function(r){
@@ -619,9 +629,16 @@
     e.preventDefault();
 
     // Check all required fields (property details and reason for selling stay optional)
-    let firstMissing = null;
+    let firstMissing = null;      // the box that holds the first thing to fix
+    let firstMissingInput = null; // the text field to put the cursor in (if it's a text field)
     form.querySelectorAll('[required]').forEach(function(field){
-      if (!field.value.trim() && !firstMissing) { firstMissing = field; }
+      const box = field.closest('.field');
+      if (!field.value.trim()) {
+        box.classList.add('missing');
+        if (!firstMissing) { firstMissing = box; firstMissingInput = field; }
+      } else {
+        box.classList.remove('missing');
+      }
     });
     // Property condition is a tap-to-select group, so check that one is picked
     const conditionGroup = document.getElementById('conditionGroup');
@@ -631,9 +648,12 @@
     }
 
     if (firstMissing) {
+      // Put the message right above the first thing to fix, then scroll so both are on screen
+      firstMissing.parentNode.insertBefore(validationMsg, firstMissing);
       validationMsg.classList.add('show');
-      firstMissing.scrollIntoView({ block: 'center' });
-      if (firstMissing.focus && firstMissing !== conditionGroup) { firstMissing.focus({ preventScroll: true }); }
+      const top = validationMsg.getBoundingClientRect().top + window.pageYOffset - window.innerHeight * 0.3;
+      window.scrollTo({ top: Math.max(0, top) });
+      if (firstMissingInput) { firstMissingInput.focus({ preventScroll: true }); }
       return;
     }
     validationMsg.classList.remove('show');
